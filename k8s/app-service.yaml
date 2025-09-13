@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: stateful-node-app-svc
+  namespace: stateful-app
+spec:
+  type: ClusterIP
+  selector:
+    app: stateful-node-app
+  ports:
+  - port: 80
+    targetPort: 3000
