@@ -4,9 +4,9 @@ metadata:
   name: stateful-node-app-svc
   namespace: stateful-app
 spec:
-  type: ClusterIP
   selector:
     app: stateful-node-app
   ports:
-  - port: 80
-    targetPort: 3000
+    - port: 3000
+      targetPort: 3000
+  type: ClusterIP

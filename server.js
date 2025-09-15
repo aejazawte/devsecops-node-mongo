@@ -1,35 +1,35 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const cors = require('cors');
-const notesRouter = require('./routes/notes');
-
+const path = require('path');
 
 const app = express();
+
+// Middleware
 app.use(bodyParser.json());
-app.use(cors());
 
+// MongoDB connection (example – update with your k8s service name if needed)
+mongoose.connect('mongodb://mongo-0.mongo,mongo-1.mongo,mongo-2.mongo:27017/mydb?replicaSet=rs0', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+    .then(() => console.log('✅ MongoDB connected'))
+    .catch(err => console.error('❌ MongoDB connection error:', err));
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://mongo-0.mongo-svc.default.svc.cluster.local:27017/statefuldb';
-const PORT = process.env.PORT || 3000;
+// Routes
+const notesRoute = require('./routes/notes');
+app.use('/api/notes', notesRoute);
 
+// Serve static frontend build
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Connect with retry logic (useful in k8s when Mongo may not be ready yet)
-const connectWithRetry = () => {
-mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-.then(() => console.log('MongoDB connected'))
-.catch(err => {
-console.error('Mongo connection error:', err.message);
-setTimeout(connectWithRetry, 3000);
+// Fallback for SPA routing (if needed)
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
-};
 
-
-connectWithRetry();
-
-
-app.get('/', (req, res) => res.send('Stateful Node + MongoDB sample app. Use /api/notes'));
-app.use('/api/notes', notesRouter);
-
-
-app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
+// Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+});
