@@ -1,41 +1,35 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: stateful-node-app
+  name: mongo
   namespace: stateful-app
 spec:
+  serviceName: "mongo-svc"
   replicas: 1
   selector:
     matchLabels:
-      app: stateful-node-app
+      app: mongo
   template:
     metadata:
       labels:
-        app: stateful-node-app
+        app: mongo
     spec:
-      imagePullSecrets:
-        - name: dockerhub-secret
       containers:
-        - name: app
-          image: admaejaz/devsecops-node-mongo
-          imagePullPolicy: Always
+        - name: mongo
+          image: mongo:6.0
           ports:
-            - containerPort: 3000
+            - containerPort: 27017
+          volumeMounts:
+            - name: mongo-data
+              mountPath: /data/db
           env:
-            - name: MONGO_URI
-              valueFrom:
-                secretKeyRef:
-                  name: app-secrets
-                  key: MONGO_URI
-          readinessProbe:
-            httpGet:
-              path: /api/notes
-              port: 3000
-            initialDelaySeconds: 5
-            periodSeconds: 5
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 3000
-            initialDelaySeconds: 20
-            periodSeconds: 10
+            - name: MONGO_INITDB_DATABASE
+              value: statefuldb
+  volumeClaimTemplates:
+    - metadata:
+        name: mongo-data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 1Gi
