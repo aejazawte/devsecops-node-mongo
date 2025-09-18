@@ -25,12 +25,12 @@ spec:
           env:
             - name: MONGO_INITDB_DATABASE
               value: statefuldb
-  volumeClaimTemplates:
+  volumeClaimTemplates:   # ✅ aligned with spec
     - metadata:
         name: mongo-data
       spec:
         accessModes: [ "ReadWriteOnce" ]
-	storageClassName: nfs-storage-class
+        storageClassName: nfs-storage-class
         resources:
           requests:
             storage: 1Gi
