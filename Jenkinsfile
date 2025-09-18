@@ -48,6 +48,16 @@ pipeline {
             }
         }
 
+
+	stage("Update Image Tag in Kubernetes Manifest")
+		{
+			steps()
+            {
+                sh "sh "sed -i 's|Build_Tag|admaejaz/devsecops-node-mongo:${Build_Number}|g' app-deployment.yaml|g' MavenWebApplication.yaml"
+
+            }
+        }
+
         stage('Deploy to Kubernetes') {
             steps {
 		sh "kubectl apply -f k8s/"
