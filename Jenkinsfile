@@ -48,21 +48,16 @@ pipeline {
             }
         }
 
-
-	stage("Update Image Tag in Kubernetes Manifest")
-		{
-			steps()
-            {
-                sh "sh "sed -i 's|Build_Tag|admaejaz/devsecops-node-mongo:${Build_Number}|g' app-deployment.yaml|g' MavenWebApplication.yaml"
-
+        stage("Update Image Tag in Kubernetes Manifest") {
+            steps {
+                sh "sed -i 's|Build_Tag|${IMAGE}|g' k8s/app-deployment.yaml"
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
-		sh "kubectl apply -f k8s/"
-                sh "kubectl -n stateful-app set image deployment/stateful-node-app stateful-node-app=${IMAGE} --record"
-		sh "kubectl -n stateful-app rollout status deployment/stateful-node-app --timeout=120s"
+                sh "kubectl apply -f k8s/app-deployment.yaml"
+                sh "kubectl -n stateful-app rollout status deployment/stateful-node-app --timeout=120s"
             }
         }
     }
