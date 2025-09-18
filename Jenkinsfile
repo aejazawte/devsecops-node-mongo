@@ -12,10 +12,16 @@ pipeline {
     }
 
     stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+
         stage('Checkout') {
             steps {
-  		git branch: 'master'
-		    url: 'https://github.com/admaejaz/devsecops-node-mongo.git'
+                git branch: 'master',
+                    url: 'https://github.com/admaejaz/devsecops-node-mongo.git',
                     credentialsId: 'github'
             }
         }
