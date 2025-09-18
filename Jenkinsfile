@@ -50,8 +50,8 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
+		sh "kubectl apply -f k8s/"
                 sh "kubectl -n stateful-app set image deployment/stateful-node-app stateful-node-app=${IMAGE} --record"
-                sh "kubectl apply -f k8s/"
 		sh "kubectl -n stateful-app rollout status deployment/stateful-node-app --timeout=120s"
             }
         }
