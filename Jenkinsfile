@@ -14,7 +14,9 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git credentialsId: 'github', url: 'https://github.com/admaejaz/devsecops-node-mongo.git'
+  		git branch: 'master'
+		    url: 'https://github.com/admaejaz/devsecops-node-mongo.git'
+                    credentialsId: 'github'
             }
         }
 
