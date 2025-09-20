@@ -17,7 +17,7 @@ spec:
         - name: dockerhub-secret
       containers:
         - name: app
-          image: admaejaz/devsecops-node-mongo
+          image: Build_Tag
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
